@@ -12,29 +12,22 @@ fetch(`http://localhost:3000/api/products/${productId}`)
     populateProductPage(pageProduct);
   });
 
+function populateProductPage(product) {
+  const productImageHolder = document.querySelector(".item__img");
 
+  productImageHolder.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}">`;
 
+  const productTitle = document.getElementById("title");
+  productTitle.innerText = product.name;
 
-function populateProductPage(pageProduct) {
-    let i = 0;
-    const product = pageProduct[i];
+  const productPrice = document.getElementById("price");
+  productPrice.innerText = product.price;
 
-    `const productImageHolder = document.getElementsByClassName("item__img");
-    const productImage = document.createElement("img");
-    productImage.setAttribute("src", ${product.imageUrl});
-    productImage.setAttribute("alt", ${product.altTxt});
+  const productDescription = document.getElementById("description");
+  productDescription.innerText = product.description;
 
-    productImageHolder.appendChild(productImage);
-
-    const productTitle = document.getElementById("title");
-    productTitle.textContent = ${product.name};
-
-    const productPrice = document.getElementById("price");
-    productPrice.textContent = ${product.price};
-
-    const productDescription = document.getElementById("description");
-    productDescription.textContent = ${product.description};`
-
-};
-
-
+  const productColor = document.getElementById("colors");
+  for (let color of product.colors) {
+    productColor.innerHTML += `<option value="${color}">${color}</option>`;
+  }
+}
