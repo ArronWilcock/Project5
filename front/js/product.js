@@ -31,3 +31,48 @@ function populateProductPage(product) {
     productColor.innerHTML += `<option value="${color}">${color}</option>`;
   }
 }
+// this is the new cart item array
+
+let cartItems = [];
+
+function cartItem(id, quantity, color) {
+  this.id = id;
+  this.quantity = quantity;
+  this.color = color;
+}
+
+addToCart.addEventListener("click", addCartItem);
+
+function addCartItem() {
+  let id = productId;
+  let quantity = itemQuantity();
+  let color = selectedColor();
+  let currentNewItem = new cartItem(id, quantity, color);
+
+  function sameItem() {
+    for (let i of cartItems) {
+      if (i.id == currentNewItem.id && i.color == currentNewItem.color) {
+        i.quantity = i.quantity + currentNewItem.quantity;
+      }
+    }
+  }
+  console.log(currentNewItem);
+  console.log(cartItems);
+  return cartItems.push(currentNewItem);
+}
+
+// this gets the input value of the item quantity
+document.getElementById("quantity").addEventListener("change", itemQuantity);
+
+function itemQuantity() {
+  let quantity = document.getElementById("quantity");
+  const selectedQuantity = quantity.value;
+  return selectedQuantity;
+}
+//  this function gets the selected product color
+document.getElementById("colors").addEventListener("change", selectedColor);
+
+function selectedColor() {
+  cartItemColor = document.getElementById("colors").value;
+  return cartItemColor;
+}
