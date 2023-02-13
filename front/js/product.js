@@ -49,6 +49,7 @@ function addCartItem() {
   let color = selectedColor();
   let currentNewItem = new cartItem(id, quantity, color);
 
+  //   function to change the quantity of a cart item if it has the same id & color
   function sameItem() {
     for (let i of cartItems) {
       if (i.id == currentNewItem.id && i.color == currentNewItem.color) {
