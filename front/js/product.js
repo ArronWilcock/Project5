@@ -51,15 +51,21 @@ function addCartItem() {
 
   //   function to change the quantity of a cart item if it has the same id & color
   function sameItem() {
+    let isFound = false;
     for (let i of cartItems) {
       if (i.id == currentNewItem.id && i.color == currentNewItem.color) {
         i.quantity = i.quantity + currentNewItem.quantity;
+        isFound = true;
       }
     }
+    return isFound;
   }
   console.log(currentNewItem);
   console.log(cartItems);
-  return cartItems.push(currentNewItem);
+  if (!sameItem()) {
+    cartItems.push(currentNewItem);
+  }
+  localStorage.cartItems = JSON.stringify(cartItems);
 }
 
 // this gets the input value of the item quantity
@@ -67,7 +73,7 @@ document.getElementById("quantity").addEventListener("change", itemQuantity);
 
 function itemQuantity() {
   let quantity = document.getElementById("quantity");
-  const selectedQuantity = quantity.value;
+  const selectedQuantity = parseInt(quantity.value);
   return selectedQuantity;
 }
 //  this function gets the selected product color
