@@ -14,9 +14,17 @@ function populateCart(cartPageItems) {
     newCartItem.setAttribute("data-color", cartItem.color);
     newCartItem.setAttribute("class", "class__item");
 
+    // fetch(`http://localhost:3000/api/products/${cartItem.id}`)
+    //   .then(response => response.json())
+    //   .then(data => cartItems(data));
+
+    //   function cartItems(data) {
+    //     const cartItemName = this.name
+    //   }
+
     newCartItem.innerHTML = `
 <div class="cart__item__img">
-  <img src="../images/product01.jpg" alt="Photo of a sofa">
+  <img src="" alt="Photo of a sofa">
 </div>
 <div class="cart__item__content">
   <div class="cart__item__content__description">
