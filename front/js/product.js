@@ -33,8 +33,6 @@ function populateProductPage(product) {
 }
 // this is the new cart item array
 
-let cartItems = [];
-
 function cartItem(id, quantity, color) {
   this.id = id;
   this.quantity = quantity;
@@ -44,42 +42,47 @@ function cartItem(id, quantity, color) {
 addToCart.addEventListener("click", addCartItem);
 
 function addCartItem() {
-  let id = productId;
-  let quantity = itemQuantity();
-  let color = selectedColor();
-  let currentNewItem = new cartItem(id, quantity, color);
+  const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+  const id = productId;
+  const quantity = getItemQuantity();
+  const color = getSelectedColor();
+  const currentNewItem = new cartItem(id, quantity, color);
 
   //   function to change the quantity of a cart item if it has the same id & color
-  function sameItem() {
-    let isFound = false;
-    for (let i of cartItems) {
-      if (i.id == currentNewItem.id && i.color == currentNewItem.color) {
-        i.quantity = i.quantity + currentNewItem.quantity;
+  function addIfFound() {
+    const isFound = false;
+    for (let cartItem of cart) {
+      if (
+        cartItem.id == currentNewItem.id &&
+        cartItem.color == currentNewItem.color
+      ) {
+        cartItem.quantity = cartItem.quantity + currentNewItem.quantity;
         isFound = true;
       }
     }
     return isFound;
   }
   console.log(currentNewItem);
-  console.log(cartItems);
-  if (!sameItem()) {
-    cartItems.push(currentNewItem);
+  console.log(cart);
+  if (!addIfFound()) {
+    cart.push(currentNewItem);
   }
-  localStorage.cartItems = JSON.stringify(cartItems);
+  localStorage.setItem("cartItems", JSON.stringify(cart));
 }
 
 // this gets the input value of the item quantity
-document.getElementById("quantity").addEventListener("change", itemQuantity);
+document.getElementById("quantity").addEventListener("change", getItemQuantity);
 
-function itemQuantity() {
-  let quantity = document.getElementById("quantity");
+function getItemQuantity() {
+  const quantity = document.getElementById("quantity");
   const selectedQuantity = parseInt(quantity.value);
   return selectedQuantity;
 }
 //  this function gets the selected product color
-document.getElementById("colors").addEventListener("change", selectedColor);
+document.getElementById("colors").addEventListener("change", getSelectedColor);
 
-function selectedColor() {
+function getSelectedColor() {
   cartItemColor = document.getElementById("colors").value;
   return cartItemColor;
 }

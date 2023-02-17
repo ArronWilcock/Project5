@@ -12,38 +12,41 @@ function populateCart(cartPageItems) {
     const newCartItem = document.createElement("article");
     newCartItem.setAttribute("data-id", cartItem.id);
     newCartItem.setAttribute("data-color", cartItem.color);
-    newCartItem.setAttribute("class", "class__item");
+    newCartItem.setAttribute("class", "cart__item");
 
-    // fetch(`http://localhost:3000/api/products/${cartItem.id}`)
-    //   .then(response => response.json())
-    //   .then(data => cartItems(data));
+    fetch(`http://localhost:3000/api/products/${cartItem.id}`)
+      .then((response) => response.json())
+      .then((data) => insertCartItem(data));
 
-    //   function cartItems(data) {
-    //     const cartItemName = this.name
-    //   }
+    function insertCartItem(product) {
+      newCartItem.innerHTML = `
+        <div class="cart__item__img">
+          <img src="${product.imageUrl}" alt="${product.altTxt}">
+        </div>
+        <div class="cart__item__content">
+          <div class="cart__item__content__description">
+            <h2>${product.name}</h2>
+            <p>${cartItem.color}</p>
+            <p>€${product.price}</p>
+          </div>
+          <div class="cart__item__content__settings">
+            <div class="cart__item__content__settings__quantity">
+              <p>Quantity : </p>
+              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cartItem.quantity}">
+            </div>
+            <div class="cart__item__content__settings__delete">
+              <p class="deleteItem">Delete</p>
+            </div>
+          </div>
+        </div>
+        `;
+      cartItemDetails.appendChild(newCartItem);
+      //TODO get current quantity from the page using get.elementbyId
+      //TODO Parse it as an interger
+      //TODO increase current quantity with cartitem.quantity
+      //TODO insert new quantity back into page
 
-    newCartItem.innerHTML = `
-<div class="cart__item__img">
-  <img src="" alt="Photo of a sofa">
-</div>
-<div class="cart__item__content">
-  <div class="cart__item__content__description">
-    <h2>product name</h2>
-    <p>${cartItem.color}</p>
-    <p>€42.00</p>
-  </div>
-  <div class="cart__item__content__settings">
-    <div class="cart__item__content__settings__quantity">
-      <p>Quantity : </p>
-      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cartItem.quantity}">
-    </div>
-    <div class="cart__item__content__settings__delete">
-      <p class="deleteItem">Delete</p>
-    </div>
-  </div>
-</div>
-`;
-
-    cartItemDetails.appendChild(newCartItem);
+      //TODO repeat process for total price
+    }
   }
 }
