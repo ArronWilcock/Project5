@@ -41,9 +41,18 @@ function populateCart(cartPageItems) {
         </div>
         `;
       cartItemDetails.appendChild(newCartItem);
-      //TODO get current quantity from the page using get.elementbyId
-      //TODO Parse it as an interger
+      updateTotalCartQuantity();
+
+      function updateTotalCartQuantity() {
+        const totalQuantityHolder = document.getElementById("totalQuantity");
+        parseInt(totalQuantityHolder, 10);
+        totalQuantityHolder.textContent = 
+        
+        console.log(totalQuantityHolder);
+      };
+
       //TODO increase current quantity with cartitem.quantity
+
       //TODO insert new quantity back into page
 
       //TODO repeat process for total price

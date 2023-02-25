@@ -51,7 +51,7 @@ function addCartItem() {
 
   //   function to change the quantity of a cart item if it has the same id & color
   function addIfFound() {
-    const isFound = false;
+    let isFound = false;
     for (let cartItem of cart) {
       if (
         cartItem.id == currentNewItem.id &&
