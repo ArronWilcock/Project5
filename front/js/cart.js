@@ -1,5 +1,4 @@
-let cartPageItems = JSON.parse(localStorage.cartItems);
-
+let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 console.log(cartPageItems);
 
 const cartItemDetails = document.getElementById("cart__items");
@@ -47,56 +46,61 @@ function insertCartItem(product, newCartItem, cartItem) {
   const itemQuantity = newCartItem.querySelector(".itemQuantity");
   itemQuantity.addEventListener("change", changeItemQuantity);
 
-  function changeItemQuantity($event) {
-    const changedElement = $event.target;
-    let changedQuantity = changedElement.value;
-
-    //TODO access cart from local storage
-    let cartPageItems = JSON.parse(localStorage.cartItems);
-    //TODO change the selected cart item quantity
-
-    //note use changedElement variable for the closest method (find the article tag for the element that was changed)
-    const changedItem = changedElement.closest("article");
-    //note we need the id and color from the article tag
-    const itemId = changedItem.getAttribute("data-id");
-    const itemColor = changedItem.getAttribute("data-color");
-    // note use the ID & color to find the element in the cart array from local storage(use array.find())
-    const newItemQuantity = cartPageItems.find(
-      (item) => item.id == itemId && item.color == itemColor
-    );
-    newItemQuantity.quantity = changedQuantity;
-    //TODO put cart back to local storage
-    localStorage.setItem("cartItems", JSON.stringify(cartPageItems));
-    console.log(cartPageItems);
-  }
-
   const deleteItemButton = newCartItem.querySelector(".deleteItem");
   deleteItemButton.addEventListener("click", deleteItem);
 
-  function deleteItem($event) {
-    const deletedItem = $event.target;
-
-    let cartPageItems = JSON.parse(localStorage.cartItems);
-
-    const itemToDelete = deletedItem.closest("article");
-    const itemId = itemToDelete.getAttribute("data-id");
-    const itemColor = itemToDelete.getAttribute("data-color");
-    const arrayItemToDelete = cartPageItems.find(
-      (item) => item.id == itemId && item.color == itemColor
-    );
-    const index = cartPageItems.indexOf(arrayItemToDelete);
-    console.log(index);
-    cartPageItems.splice(index, 1);
-    itemToDelete.remove();
-    localStorage.setItem("cartItems", JSON.stringify(cartPageItems));
-    console.log(cartPageItems);
-  }
-
-  updateTotalCartQuantity(cartItem);
+  updateTotalCartQuantity(cartItem.quantity);
   updateTotalCartPrice(cartItem, product);
 }
 
-function updateTotalCartQuantity(cartItem) {
+function deleteItem($event) {
+  const deletedItem = $event.target;
+
+  let cartPageItems = JSON.parse(localStorage.getItem("cartItems"));
+
+  const itemToDelete = deletedItem.closest("article");
+  const itemId = itemToDelete.dataset.id;
+  const itemColor = itemToDelete.dataset.color;
+  const arrayItemToDelete = cartPageItems.find(
+    (item) => item.id == itemId && item.color == itemColor
+  );
+  const index = cartPageItems.indexOf(arrayItemToDelete);
+  console.log(index);
+  cartPageItems.splice(index, 1);
+  itemToDelete.remove();
+  localStorage.setItem("cartItems", JSON.stringify(cartPageItems));
+  console.log(cartPageItems);
+
+  const itemRemovedQuantity = -arrayItemToDelete.quantity;
+  parseInt(itemRemovedQuantity);
+
+  updateTotalCartQuantity(itemRemovedQuantity);
+}
+
+function changeItemQuantity($event) {
+  const changedElement = $event.target;
+  let changedQuantity = parseInt(changedElement.value);
+
+  let cartPageItems = JSON.parse(localStorage.getItem("cartItems"));
+  const changedItem = changedElement.closest("article");
+
+  const itemId = changedItem.dataset.id;
+  const itemColor = changedItem.dataset.color;
+
+  const foundCartItem = cartPageItems.find(
+    (item) => item.id === itemId && item.color === itemColor
+  );
+  const quantityDifference = changedQuantity - foundCartItem.quantity;
+
+  foundCartItem.quantity = changedQuantity;
+
+  localStorage.setItem("cartItems", JSON.stringify(cartPageItems));
+  console.log(cartPageItems);
+
+  updateTotalCartQuantity(quantityDifference);
+}
+
+function updateTotalCartQuantity(quantity) {
   const totalQuantityHolder = document.getElementById("totalQuantity");
   let totalQuantityText = totalQuantityHolder.innerText;
   if (totalQuantityText === "") {
@@ -104,7 +108,7 @@ function updateTotalCartQuantity(cartItem) {
   }
   let totalQuantity = parseInt(totalQuantityText);
 
-  totalQuantity += cartItem.quantity;
+  totalQuantity += quantity;
   totalQuantityHolder.innerText = totalQuantity;
 }
 
