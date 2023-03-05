@@ -1,6 +1,8 @@
 let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 console.log(cartPageItems);
 
+updateTotalCartQuantity(0);
+
 const cartItemDetails = document.getElementById("cart__items");
 
 populateCart(cartPageItems);
@@ -65,7 +67,6 @@ function deleteItem($event) {
     (item) => item.id == itemId && item.color == itemColor
   );
   const index = cartPageItems.indexOf(arrayItemToDelete);
-  console.log(index);
   cartPageItems.splice(index, 1);
   itemToDelete.remove();
   localStorage.setItem("cartItems", JSON.stringify(cartPageItems));
@@ -79,6 +80,7 @@ function deleteItem($event) {
 
 function changeItemQuantity($event) {
   const changedElement = $event.target;
+  
   let changedQuantity = parseInt(changedElement.value);
 
   let cartPageItems = JSON.parse(localStorage.getItem("cartItems"));
@@ -90,6 +92,7 @@ function changeItemQuantity($event) {
   const foundCartItem = cartPageItems.find(
     (item) => item.id === itemId && item.color === itemColor
   );
+  
   const quantityDifference = changedQuantity - foundCartItem.quantity;
 
   foundCartItem.quantity = changedQuantity;
@@ -98,6 +101,7 @@ function changeItemQuantity($event) {
   console.log(cartPageItems);
 
   updateTotalCartQuantity(quantityDifference);
+  
 }
 
 function updateTotalCartQuantity(quantity) {
