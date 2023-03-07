@@ -2,6 +2,7 @@ let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 console.log(cartPageItems);
 
 updateTotalCartQuantity(0);
+updateTotalCartPrice(0, 0);
 
 const cartItemDetails = document.getElementById("cart__items");
 
@@ -52,7 +53,7 @@ function insertCartItem(product, newCartItem, cartItem) {
   deleteItemButton.addEventListener("click", deleteItem);
 
   updateTotalCartQuantity(cartItem.quantity);
-  updateTotalCartPrice(cartItem, product);
+  updateTotalCartPrice(cartItem.quantity, product.price);
 }
 
 function deleteItem($event) {
@@ -73,14 +74,23 @@ function deleteItem($event) {
   console.log(cartPageItems);
 
   const itemRemovedQuantity = -arrayItemToDelete.quantity;
-  parseInt(itemRemovedQuantity);
+  const itemRemoved = parseInt(itemRemovedQuantity);
+
+  const priceContainer = itemToDelete.querySelector(
+    ".cart__item__content__description"
+  );
+  const priceTextContainer = priceContainer.lastElementChild.innerHTML;
+  const priceText = priceTextContainer.substr(1);
+  const price = parseInt(priceText);
 
   updateTotalCartQuantity(itemRemovedQuantity);
+  updateTotalCartPrice(itemRemoved, price);
 }
 
 function changeItemQuantity($event) {
   const changedElement = $event.target;
-  
+  console.log(changedElement);
+
   let changedQuantity = parseInt(changedElement.value);
 
   let cartPageItems = JSON.parse(localStorage.getItem("cartItems"));
@@ -92,16 +102,22 @@ function changeItemQuantity($event) {
   const foundCartItem = cartPageItems.find(
     (item) => item.id === itemId && item.color === itemColor
   );
-  
-  const quantityDifference = changedQuantity - foundCartItem.quantity;
 
+  const quantityDifference = changedQuantity - foundCartItem.quantity;
   foundCartItem.quantity = changedQuantity;
 
   localStorage.setItem("cartItems", JSON.stringify(cartPageItems));
   console.log(cartPageItems);
 
+  const priceContainer = changedItem.querySelector(
+    ".cart__item__content__description"
+  );
+  const priceTextContainer = priceContainer.lastElementChild.innerHTML;
+  const priceText = priceTextContainer.substr(1);
+  const price = parseInt(priceText);
+
   updateTotalCartQuantity(quantityDifference);
-  
+  updateTotalCartPrice(quantityDifference, price);
 }
 
 function updateTotalCartQuantity(quantity) {
@@ -116,7 +132,7 @@ function updateTotalCartQuantity(quantity) {
   totalQuantityHolder.innerText = totalQuantity;
 }
 
-function updateTotalCartPrice(cartItem, product) {
+function updateTotalCartPrice(quantity, price) {
   const totalPriceHolder = document.getElementById("totalPrice");
   let totalPriceText = totalPriceHolder.innerText;
   if (totalPriceText === "") {
@@ -124,6 +140,6 @@ function updateTotalCartPrice(cartItem, product) {
   }
   let totalPrice = parseInt(totalPriceText);
 
-  totalPrice += cartItem.quantity * product.price;
+  totalPrice += quantity * price;
   totalPriceHolder.innerText = totalPrice;
 }
