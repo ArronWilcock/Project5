@@ -1,8 +1,10 @@
+const productCache = [];
+
 let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 console.log(cartPageItems);
 
-updateTotalCartQuantity(0);
-updateTotalCartPrice(0, 0);
+// updateTotalCartQuantity(0);
+// updateTotalCartPrice(0, 0);
 
 const cartItemDetails = document.getElementById("cart__items");
 
@@ -23,6 +25,8 @@ function populateCart(cartPageItems) {
 }
 
 function insertCartItem(product, newCartItem, cartItem) {
+  updateCache(product);
+  console.log(productCache);
   newCartItem.innerHTML = `
     <div class="cart__item__img">
       <img src="${product.imageUrl}" alt="${product.altTxt}">
@@ -56,6 +60,12 @@ function insertCartItem(product, newCartItem, cartItem) {
   updateTotalCartPrice(cartItem.quantity, product.price);
 }
 
+function updateCache(product) {
+  if (!productCache.find((element) => element._id === product._id)) {
+    productCache.push(product);
+  }
+}
+
 function deleteItem($event) {
   const deletedItem = $event.target;
 
@@ -74,22 +84,19 @@ function deleteItem($event) {
   console.log(cartPageItems);
 
   const itemRemovedQuantity = -arrayItemToDelete.quantity;
-  const itemRemoved = parseInt(itemRemovedQuantity);
 
-  const priceContainer = itemToDelete.querySelector(
-    ".cart__item__content__description"
-  );
-  const priceTextContainer = priceContainer.lastElementChild.innerHTML;
-  const priceText = priceTextContainer.substr(1);
-  const price = parseInt(priceText);
+  const price = findCartItemPrice(arrayItemToDelete);
 
   updateTotalCartQuantity(itemRemovedQuantity);
-  updateTotalCartPrice(itemRemoved, price);
+  updateTotalCartPrice(itemRemovedQuantity, price);
+}
+
+function findCartItemPrice(cartItem) {
+  return productCache.find((product) => product._id === cartItem.id).price;
 }
 
 function changeItemQuantity($event) {
   const changedElement = $event.target;
-  console.log(changedElement);
 
   let changedQuantity = parseInt(changedElement.value);
 
@@ -109,12 +116,7 @@ function changeItemQuantity($event) {
   localStorage.setItem("cartItems", JSON.stringify(cartPageItems));
   console.log(cartPageItems);
 
-  const priceContainer = changedItem.querySelector(
-    ".cart__item__content__description"
-  );
-  const priceTextContainer = priceContainer.lastElementChild.innerHTML;
-  const priceText = priceTextContainer.substr(1);
-  const price = parseInt(priceText);
+  const price = findCartItemPrice(foundCartItem);
 
   updateTotalCartQuantity(quantityDifference);
   updateTotalCartPrice(quantityDifference, price);
@@ -143,3 +145,23 @@ function updateTotalCartPrice(quantity, price) {
   totalPrice += quantity * price;
   totalPriceHolder.innerText = totalPrice;
 }
+
+const orderSubmit = document.getElementById("order");
+
+orderSubmit.addEventListener("click", ($event) => {
+  $event.preventDefault();
+  const firstNameInput = document.getElementById("firstName");
+  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+  const lastNameInput = document.getElementById("lastName");
+  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+  const addressInput = document.getElementById("address");
+  const addressErrorMsg = document.getElementById("addressNameErrorMsg");
+  const cityInput = document.getElementById("city");
+  const cityErrorMsg = document.getElementById("cityNameErrorMsg");
+  const emailInput = document.getElementById("email");
+  const emailErrorMsg = document.getElementById("emailNameErrorMsg");
+
+  if (firstNameInput.value = "") {
+    firstNameErrorMsg.innerText = "Required Field";
+  }
+});
