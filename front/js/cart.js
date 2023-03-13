@@ -3,9 +3,6 @@ const productCache = [];
 let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 console.log(cartPageItems);
 
-// updateTotalCartQuantity(0);
-// updateTotalCartPrice(0, 0);
-
 const cartItemDetails = document.getElementById("cart__items");
 
 populateCart(cartPageItems);
@@ -150,18 +147,44 @@ const orderSubmit = document.getElementById("order");
 
 orderSubmit.addEventListener("click", ($event) => {
   $event.preventDefault();
-  const firstNameInput = document.getElementById("firstName");
-  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  const lastNameInput = document.getElementById("lastName");
-  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  const addressInput = document.getElementById("address");
-  const addressErrorMsg = document.getElementById("addressNameErrorMsg");
-  const cityInput = document.getElementById("city");
-  const cityErrorMsg = document.getElementById("cityNameErrorMsg");
-  const emailInput = document.getElementById("email");
-  const emailErrorMsg = document.getElementById("emailNameErrorMsg");
 
-  if (firstNameInput.value = "") {
-    firstNameErrorMsg.innerText = "Required Field";
+  const firstNameInput = document.getElementById("firstName").value;
+  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+  const lastNameInput = document.getElementById("lastName").value;
+  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+  const addressInput = document.getElementById("address").value;
+  const addressErrorMsg = document.getElementById("addressErrorMsg");
+  const cityInput = document.getElementById("city").value;
+  const cityErrorMsg = document.getElementById("cityErrorMsg");
+  const emailInput = document.getElementById("email").value;
+  const emailErrorMsg = document.getElementById("emailErrorMsg");
+
+  const validName = new RegExp(/^([^0-9]*)$/g);
+  const validEmail = new RegExp(
+    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/g
+  );
+
+  if (firstNameInput == "") {
+    firstNameErrorMsg.innerText = "Required field";
+  } else if (!firstNameInput.match(validName)) {
+    firstNameErrorMsg.innerText = "Invalid Name";
+  }
+  if (lastNameInput == "") {
+    lastNameErrorMsg.innerText = "Required field";
+  } else if (!lastNameInput.match(validName)) {
+    lastNameErrorMsg.innerText = "Invalid Name";
+  }
+  if (addressInput == "") {
+    addressErrorMsg.innerText = "Required field";
+  }
+  if (cityInput == "") {
+    cityErrorMsg.innerText = "Required field";
+  } else if (!cityInput.match(validName)) {
+    cityErrorMsg.innerText = "Invalid Name";
+  }
+  if (emailInput == "") {
+    emailErrorMsg.innerText = "Required field";
+  } else if (!emailInput.match(validEmail)) {
+    emailErrorMsg.innerText = "Invalid Email";
   }
 });
