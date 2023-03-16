@@ -1,9 +1,11 @@
+// the following variables find and define the products 'id' from the url
 const queryString = window.location.search;
 
 const urlParams = new URLSearchParams(queryString);
 
 const productId = urlParams.get("id");
 
+// this fetch request retrieves the product data of the defined product
 fetch(`http://localhost:3000/api/products/${productId}`)
   .then((data) => {
     return data.json();
@@ -12,6 +14,7 @@ fetch(`http://localhost:3000/api/products/${productId}`)
     populateProductPage(pageProduct);
   });
 
+// this function gets the product pages information holders and inserts the fetched data DOM
 function populateProductPage(product) {
   const productImageHolder = document.querySelector(".item__img");
 
@@ -41,6 +44,7 @@ function cartItem(id, quantity, color) {
 
 addToCart.addEventListener("click", addCartItem);
 
+// function that either gets hold of the cartItems array in local storage or initializes a new one if first item
 function addCartItem() {
   const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
 
@@ -49,7 +53,7 @@ function addCartItem() {
   const color = getSelectedColor();
   const currentNewItem = new cartItem(id, quantity, color);
 
-  //   function to change the quantity of a cart item if it has the same id & color
+  //   function to change the quantity of a cart item if it has the same id & color or add a cart item if no match found
   function addIfFound() {
     let isFound = false;
     for (let cartItem of cart) {

@@ -1,12 +1,12 @@
 const productCache = [];
-
+// This gets hold of the local storage cart items or creates a new array if blank
 let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 console.log(cartPageItems);
 
 const cartItemDetails = document.getElementById("cart__items");
 
 populateCart(cartPageItems);
-
+//  function to use the local storage array and the fetched API data to populate the selected products details on cart page
 function populateCart(cartPageItems) {
   for (let i = 0; i < cartPageItems.length; i++) {
     const cartItem = cartPageItems[i];
@@ -20,7 +20,7 @@ function populateCart(cartPageItems) {
       .then((data) => insertCartItem(data, newCartItem, cartItem));
   }
 }
-
+// function that creates the DOM object for each new cart item
 function insertCartItem(product, newCartItem, cartItem) {
   updateCache(product);
   console.log(productCache);
@@ -56,13 +56,13 @@ function insertCartItem(product, newCartItem, cartItem) {
   updateTotalCartQuantity(cartItem.quantity);
   updateTotalCartPrice(cartItem.quantity, product.price);
 }
-
+// creates a product cache to grab the product price from later
 function updateCache(product) {
   if (!productCache.find((element) => element._id === product._id)) {
     productCache.push(product);
   }
 }
-
+// function to handle the total price and quantity update when cart item is deleted
 function deleteItem($event) {
   const deletedItem = $event.target;
 
@@ -91,7 +91,7 @@ function deleteItem($event) {
 function findCartItemPrice(cartItem) {
   return productCache.find((product) => product._id === cartItem.id).price;
 }
-
+// function to handle the total price and quantity update when cart items quantity is changed
 function changeItemQuantity($event) {
   const changedElement = $event.target;
 
@@ -118,7 +118,7 @@ function changeItemQuantity($event) {
   updateTotalCartQuantity(quantityDifference);
   updateTotalCartPrice(quantityDifference, price);
 }
-
+// this function holds the mathematic formula used when updating the cart quantity
 function updateTotalCartQuantity(quantity) {
   const totalQuantityHolder = document.getElementById("totalQuantity");
   let totalQuantityText = totalQuantityHolder.innerText;
@@ -130,7 +130,7 @@ function updateTotalCartQuantity(quantity) {
   totalQuantity += quantity;
   totalQuantityHolder.innerText = totalQuantity;
 }
-
+// this function holds the mathematic formula used when updating the cart price
 function updateTotalCartPrice(quantity, price) {
   const totalPriceHolder = document.getElementById("totalPrice");
   let totalPriceText = totalPriceHolder.innerText;
@@ -144,10 +144,10 @@ function updateTotalCartPrice(quantity, price) {
 }
 
 const orderSubmit = document.getElementById("order");
-
+// event listener for the order button
 orderSubmit.addEventListener("click", ($event) => {
   $event.preventDefault();
-
+  // gets the values of the form input data
   const firstNameInput = document.getElementById("firstName").value;
   const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
   const lastNameInput = document.getElementById("lastName").value;
@@ -158,12 +158,12 @@ orderSubmit.addEventListener("click", ($event) => {
   const cityErrorMsg = document.getElementById("cityErrorMsg");
   const emailInput = document.getElementById("email").value;
   const emailErrorMsg = document.getElementById("emailErrorMsg");
-
+  // regex to validate name and email inputs
   const validName = new RegExp(/^([^0-9]*)$/g);
   const validEmail = new RegExp(
     /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/g
   );
-
+  // DOM responses for invalid inputs
   if (firstNameInput == "") {
     firstNameErrorMsg.innerText = "Required field";
   } else if (!firstNameInput.match(validName)) {
@@ -187,4 +187,70 @@ orderSubmit.addEventListener("click", ($event) => {
   } else if (!emailInput.match(validEmail)) {
     emailErrorMsg.innerText = "Invalid Email";
   }
+
+  // const options = {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(orderDetails),
+  // };
+  // fetch("http://localhost:3000/api/products", options)
+  //   .then((data) => {
+  //     if (!data.ok) {
+  //       throw Error(data.status);
+  //     }
+  //     return data.json();
+  //   })
+  //   .then((orderDetails) => {
+  //     console.log(orderDetails);
+  //   })
+  //   .catch((e) => {
+  //     console.log(e);
+  //   });
+  const orderDetails = {
+    firstName: firstNameInput,
+    lastName: lastNameInput,
+    address: addressInput,
+    city: cityInput,
+    email: emailInput,
+    products: cartPageItems,
+  };
+  submitFormData(orderDetails);
 });
+
+function makeRequest(data) {
+  return new promise((resolve, reject) => {
+    let request = new XMLHttpRequest();
+    request.open("POST", "http://localhost:3000/api/products/order");
+    request.onreadystatechange = () => {
+      if (request.readyState === 4) {
+        if (request.status === 201) {
+          resolve(JSON.parse(request.response));
+        } else {
+          reject(JSON.parse(request.response));
+        }
+      }
+    };
+
+    request.setRequestHeader("content-type", "application/json");
+    request.send(JSON.stringify(data));
+  });
+}
+async function submitFormData(orderDetails) {
+  try {
+    const requestPromise = makeRequest(orderDetails);
+    const response = await requestPromise;
+
+    responseFirstName.textContent = response.firstName;
+    responseLastName.textContent = response.lastName;
+    responseAddress.textContent = response.address;
+    responseCity.textContent = response.city;
+    responseEmail.textContent = response.email;
+    responseItemId.textContent = response.products.id;
+    responseItemColor.textContent = response.products.color;
+    responseItemQuantity.textContent = response.products.quantity;
+  } catch (errorResponse) {
+    // responseMessage.textContent = errorResponse.error;
+  }
+}
