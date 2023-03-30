@@ -1,3 +1,18 @@
+const firstNameInputElement = document.getElementById("firstName");
+const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+const lastNameInputElement = document.getElementById("lastName");
+const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+const addressInputElement = document.getElementById("address");
+const addressErrorMsg = document.getElementById("addressErrorMsg");
+const cityInputElement = document.getElementById("city");
+const cityErrorMsg = document.getElementById("cityErrorMsg");
+const emailInputElement = document.getElementById("email");
+const emailErrorMsg = document.getElementById("emailErrorMsg");
+
+// regex to validate name and email inputs
+const validName = new RegExp(/^([^0-9]*)$/g);
+const validEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/g);
+
 const productCache = [];
 // This gets hold of the local storage cart items or creates a new array if blank
 let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -5,6 +20,21 @@ console.log(cartPageItems);
 
 const cartItemDetails = document.getElementById("cart__items");
 
+firstNameInputElement.addEventListener("change", ($event) =>
+  validateFirstName($event.target)
+);
+lastNameInputElement.addEventListener("change", ($event) =>
+  validateLastName($event.target)
+);
+addressInputElement.addEventListener("change", ($event) =>
+  validateAddress($event.target)
+);
+cityInputElement.addEventListener("change", ($event) =>
+  validateCity($event.target)
+);
+emailInputElement.addEventListener("change", ($event) =>
+  validateEmail($event.target)
+);
 populateCart(cartPageItems);
 //  function to use the local storage array and the fetched API data to populate the selected products details on cart page
 function populateCart(cartPageItems) {
@@ -143,114 +173,159 @@ function updateTotalCartPrice(quantity, price) {
   totalPriceHolder.innerText = totalPrice;
 }
 
+// TODO add change event listeners to all input fields which will validate in real time
+// NOTE set the error message to empty string if there are no errors in order to reset any previous error messages
 const orderSubmit = document.getElementById("order");
 // event listener for the order button
-orderSubmit.addEventListener("click", ($event) => {
+orderSubmit.addEventListener("click", placeOrder);
+function placeOrder($event) {
   $event.preventDefault();
   // gets the values of the form input data
-  const firstNameInput = document.getElementById("firstName").value;
-  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  const lastNameInput = document.getElementById("lastName").value;
-  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  const addressInput = document.getElementById("address").value;
-  const addressErrorMsg = document.getElementById("addressErrorMsg");
-  const cityInput = document.getElementById("city").value;
-  const cityErrorMsg = document.getElementById("cityErrorMsg");
-  const emailInput = document.getElementById("email").value;
-  const emailErrorMsg = document.getElementById("emailErrorMsg");
-  // regex to validate name and email inputs
-  const validName = new RegExp(/^([^0-9]*)$/g);
-  const validEmail = new RegExp(
-    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/g
-  );
-  // DOM responses for invalid inputs
-  if (firstNameInput == "") {
-    firstNameErrorMsg.innerText = "Required field";
-  } else if (!firstNameInput.match(validName)) {
-    firstNameErrorMsg.innerText = "Invalid Name";
-  }
-  if (lastNameInput == "") {
-    lastNameErrorMsg.innerText = "Required field";
-  } else if (!lastNameInput.match(validName)) {
-    lastNameErrorMsg.innerText = "Invalid Name";
-  }
-  if (addressInput == "") {
-    addressErrorMsg.innerText = "Required field";
-  }
-  if (cityInput == "") {
-    cityErrorMsg.innerText = "Required field";
-  } else if (!cityInput.match(validName)) {
-    cityErrorMsg.innerText = "Invalid Name";
-  }
-  if (emailInput == "") {
-    emailErrorMsg.innerText = "Required field";
-  } else if (!emailInput.match(validEmail)) {
-    emailErrorMsg.innerText = "Invalid Email";
-  }
+  const {
+    firstNameInput,
+    lastNameInput,
+    addressInput,
+    cityInput,
+    emailInput,
+    hasAllValidFields,
+  } = validateContactForm();
+  // FIXME Do not allow user to place order if fields are not valid
+  if (hasAllValidFields) {
+    let cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const productIds = cart.map((cartItem) => cartItem.id);
 
-  // const options = {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(orderDetails),
-  // };
-  // fetch("http://localhost:3000/api/products", options)
-  //   .then((data) => {
-  //     if (!data.ok) {
-  //       throw Error(data.status);
-  //     }
-  //     return data.json();
-  //   })
-  //   .then((orderDetails) => {
-  //     console.log(orderDetails);
-  //   })
-  //   .catch((e) => {
-  //     console.log(e);
-  //   });
-  const orderDetails = {
-    firstName: firstNameInput,
-    lastName: lastNameInput,
-    address: addressInput,
-    city: cityInput,
-    email: emailInput,
-    products: cartPageItems,
-  };
-  submitFormData(orderDetails);
-});
-
-function makeRequest(data) {
-  return new promise((resolve, reject) => {
-    let request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:3000/api/products/order");
-    request.onreadystatechange = () => {
-      if (request.readyState === 4) {
-        if (request.status === 201) {
-          resolve(JSON.parse(request.response));
-        } else {
-          reject(JSON.parse(request.response));
-        }
-      }
+    const orderDetails = {
+      contact: {
+        firstName: firstNameInput,
+        lastName: lastNameInput,
+        address: addressInput,
+        city: cityInput,
+        email: emailInput,
+      },
+      products: productIds,
     };
 
-    request.setRequestHeader("content-type", "application/json");
-    request.send(JSON.stringify(data));
-  });
-}
-async function submitFormData(orderDetails) {
-  try {
-    const requestPromise = makeRequest(orderDetails);
-    const response = await requestPromise;
-
-    responseFirstName.textContent = response.firstName;
-    responseLastName.textContent = response.lastName;
-    responseAddress.textContent = response.address;
-    responseCity.textContent = response.city;
-    responseEmail.textContent = response.email;
-    responseItemId.textContent = response.products.id;
-    responseItemColor.textContent = response.products.color;
-    responseItemQuantity.textContent = response.products.quantity;
-  } catch (errorResponse) {
-    // responseMessage.textContent = errorResponse.error;
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderDetails),
+    };
+    console.log(options);
+    fetch("http://localhost:3000/api/products/order", options)
+      .then((data) => {
+        if (!data.ok) {
+          throw Error(data.status);
+        }
+        return data.json();
+      })
+      .then((result) => {
+        redirectToConfirmationPage(result);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
+}
+
+function redirectToConfirmationPage(result) {
+  const orderUrl = `./confirmation.html?id=${result.orderId}`;
+
+  location.assign(orderUrl);
+}
+
+function validateContactForm() {
+  let hasAllValidFields = true;
+
+  const firstNameInput = validateFirstName(firstNameInputElement);
+  const lastNameInput = validateLastName(lastNameInputElement);
+  const addressInput = validateAddress(addressInputElement);
+  const cityInput = validateCity(cityInputElement);
+  const emailInput = validateEmail(emailInputElement);
+
+  if (
+    !firstNameInput.isValid ||
+    !lastNameInput.isValid ||
+    !addressInput.isValid ||
+    !cityInput.isValid ||
+    !emailInput.isValid
+  ) {
+    hasAllValidFields = false;
+  }
+
+  return {
+    firstNameInput,
+    lastNameInput,
+    addressInput,
+    cityInput,
+    emailInput,
+    hasAllValidFields,
+  };
+}
+function validateEmail(inputElement) {
+  let isValid = true;
+  const emailInput = inputElement.value;
+  if (emailInput == "") {
+    emailErrorMsg.innerText = "Required field";
+    isValid = false;
+  } else if (!emailInput.match(validEmail)) {
+    emailErrorMsg.innerText = "Invalid Email";
+    isValid = false;
+  }
+  return { emailInput, isValid };
+}
+
+function validateCity(inputElement) {
+  let isValid = true;
+  const cityInput = inputElement.value;
+  cityErrorMsg.innerText = "";
+  if (cityInput == "") {
+    cityErrorMsg.innerText = "Required field";
+    isValid = false;
+  } else if (!cityInput.match(validName)) {
+    cityErrorMsg.innerText = "Invalid Name";
+    isValid = false;
+  }
+  return { cityInput, isValid };
+}
+
+function validateAddress(inputElement) {
+  let isValid = true;
+  const addressInput = inputElement.value;
+  addressErrorMsg.innerText = "";
+  if (addressInput == "") {
+    addressErrorMsg.innerText = "Required field";
+    isValid = false;
+  }
+  return { addressInput, isValid };
+}
+
+function validateLastName(inputElement) {
+  let isValid = true;
+  const lastNameInput = inputElement.value;
+  lastNameErrorMsg.innerText = "";
+  if (lastNameInput == "") {
+    lastNameErrorMsg.innerText = "Required field";
+    isValid = false;
+  } else if (!lastNameInput.match(validName)) {
+    lastNameErrorMsg.innerText = "Invalid Name";
+    isValid = false;
+  }
+  return { lastNameInput, isValid };
+}
+
+function validateFirstName(inputElement) {
+  let isValid = true;
+  const firstNameInput = inputElement.value;
+  firstNameErrorMsg.innerText = "";
+  if (firstNameInput == "") {
+    firstNameErrorMsg.innerText = "Required field";
+    isValid = false;
+  } else if (!firstNameInput.match(validName)) {
+    firstNameErrorMsg.innerText = "Invalid Name";
+    isValid = false;
+  }
+
+  return { firstNameInput, isValid };
 }
