@@ -73,6 +73,7 @@ function addCartItem() {
     cart.push(currentNewItem);
   }
   localStorage.setItem("cartItems", JSON.stringify(cart));
+  alert("Item added to cart");
 }
 
 // this gets the input value of the item quantity

@@ -181,14 +181,8 @@ orderSubmit.addEventListener("click", placeOrder);
 function placeOrder($event) {
   $event.preventDefault();
   // gets the values of the form input data
-  const {
-    firstNameInput,
-    lastNameInput,
-    addressInput,
-    cityInput,
-    emailInput,
-    hasAllValidFields,
-  } = validateContactForm();
+  const { firstName, lastName, address, city, email, hasAllValidFields } =
+    validateContactForm();
   // FIXME Do not allow user to place order if fields are not valid
   if (hasAllValidFields) {
     let cart = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -196,11 +190,11 @@ function placeOrder($event) {
 
     const orderDetails = {
       contact: {
-        firstName: firstNameInput,
-        lastName: lastNameInput,
-        address: addressInput,
-        city: cityInput,
-        email: emailInput,
+        firstName,
+        lastName,
+        address,
+        city,
+        email,
       },
       products: productIds,
     };
@@ -221,6 +215,7 @@ function placeOrder($event) {
         return data.json();
       })
       .then((result) => {
+        localStorage.removeItem("cartItems");
         redirectToConfirmationPage(result);
       })
       .catch((e) => {
@@ -238,94 +233,97 @@ function redirectToConfirmationPage(result) {
 function validateContactForm() {
   let hasAllValidFields = true;
 
-  const firstNameInput = validateFirstName(firstNameInputElement);
-  const lastNameInput = validateLastName(lastNameInputElement);
-  const addressInput = validateAddress(addressInputElement);
-  const cityInput = validateCity(cityInputElement);
-  const emailInput = validateEmail(emailInputElement);
+  const { firstName, isFirstNameValid } = validateFirstName(
+    firstNameInputElement
+  );
+  const { lastName, isLastNameValid } = validateLastName(lastNameInputElement);
+  const { address, isAddressValid } = validateAddress(addressInputElement);
+  const { city, isCityValid } = validateCity(cityInputElement);
+  const { email, isEmailValid } = validateEmail(emailInputElement);
 
   if (
-    !firstNameInput.isValid ||
-    !lastNameInput.isValid ||
-    !addressInput.isValid ||
-    !cityInput.isValid ||
-    !emailInput.isValid
+    !isFirstNameValid ||
+    !isLastNameValid ||
+    !isAddressValid ||
+    !isCityValid ||
+    !isEmailValid
   ) {
     hasAllValidFields = false;
   }
 
   return {
-    firstNameInput,
-    lastNameInput,
-    addressInput,
-    cityInput,
-    emailInput,
+    firstName,
+    lastName,
+    address,
+    city,
+    email,
     hasAllValidFields,
   };
 }
 function validateEmail(inputElement) {
-  let isValid = true;
-  const emailInput = inputElement.value;
-  if (emailInput == "") {
+  let isEmailValid = true;
+  const email = inputElement.value;
+  emailErrorMsg.innerText = "";
+  if (email == "") {
     emailErrorMsg.innerText = "Required field";
-    isValid = false;
-  } else if (!emailInput.match(validEmail)) {
+    isEmailValid = false;
+  } else if (!email.match(validEmail)) {
     emailErrorMsg.innerText = "Invalid Email";
-    isValid = false;
+    isEmailValid = false;
   }
-  return { emailInput, isValid };
+  return { email, isEmailValid };
 }
 
 function validateCity(inputElement) {
-  let isValid = true;
-  const cityInput = inputElement.value;
+  let isCityValid = true;
+  const city = inputElement.value;
   cityErrorMsg.innerText = "";
-  if (cityInput == "") {
+  if (city == "") {
     cityErrorMsg.innerText = "Required field";
-    isValid = false;
-  } else if (!cityInput.match(validName)) {
+    isCityValid = false;
+  } else if (!city.match(validName)) {
     cityErrorMsg.innerText = "Invalid Name";
-    isValid = false;
+    isCityValid = false;
   }
-  return { cityInput, isValid };
+  return { city, isCityValid };
 }
 
 function validateAddress(inputElement) {
-  let isValid = true;
-  const addressInput = inputElement.value;
+  let isAddressValid = true;
+  const address = inputElement.value;
   addressErrorMsg.innerText = "";
-  if (addressInput == "") {
+  if (address == "") {
     addressErrorMsg.innerText = "Required field";
-    isValid = false;
+    isAddressValid = false;
   }
-  return { addressInput, isValid };
+  return { address, isAddressValid };
 }
 
 function validateLastName(inputElement) {
-  let isValid = true;
-  const lastNameInput = inputElement.value;
+  let isLastNameValid = true;
+  const lastName = inputElement.value;
   lastNameErrorMsg.innerText = "";
-  if (lastNameInput == "") {
+  if (lastName == "") {
     lastNameErrorMsg.innerText = "Required field";
-    isValid = false;
-  } else if (!lastNameInput.match(validName)) {
+    isLastNameValid = false;
+  } else if (!lastName.match(validName)) {
     lastNameErrorMsg.innerText = "Invalid Name";
-    isValid = false;
+    isLastNameValid = false;
   }
-  return { lastNameInput, isValid };
+  return { lastName, isLastNameValid };
 }
 
 function validateFirstName(inputElement) {
-  let isValid = true;
-  const firstNameInput = inputElement.value;
+  let isFirstNameValid = true;
+  const firstName = inputElement.value;
   firstNameErrorMsg.innerText = "";
-  if (firstNameInput == "") {
+  if (firstName == "") {
     firstNameErrorMsg.innerText = "Required field";
-    isValid = false;
-  } else if (!firstNameInput.match(validName)) {
+    isFirstNameValid = false;
+  } else if (!firstName.match(validName)) {
     firstNameErrorMsg.innerText = "Invalid Name";
-    isValid = false;
+    isFirstNameValid = false;
   }
 
-  return { firstNameInput, isValid };
+  return { firstName, isFirstNameValid };
 }
