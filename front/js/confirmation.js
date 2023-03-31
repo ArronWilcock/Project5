@@ -1,3 +1,4 @@
+// Sequence to get hold of the order ID from the URL and print on the page
 const queryString = window.location.search;
 
 const urlParams = new URLSearchParams(queryString);

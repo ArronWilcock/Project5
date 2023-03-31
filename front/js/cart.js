@@ -19,7 +19,7 @@ let cartPageItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 console.log(cartPageItems);
 
 const cartItemDetails = document.getElementById("cart__items");
-
+// These event listeners validate the form inputs in real time
 firstNameInputElement.addEventListener("change", ($event) =>
   validateFirstName($event.target)
 );
@@ -223,13 +223,13 @@ function placeOrder($event) {
       });
   }
 }
-
+// This function redirects to confirmation page if form validation is correct and post request made
 function redirectToConfirmationPage(result) {
   const orderUrl = `./confirmation.html?id=${result.orderId}`;
 
   location.assign(orderUrl);
 }
-
+// This function validates if all form input fields are valid
 function validateContactForm() {
   let hasAllValidFields = true;
 
@@ -260,6 +260,7 @@ function validateContactForm() {
     hasAllValidFields,
   };
 }
+// this function validates the email input
 function validateEmail(inputElement) {
   let isEmailValid = true;
   const email = inputElement.value;
@@ -273,7 +274,7 @@ function validateEmail(inputElement) {
   }
   return { email, isEmailValid };
 }
-
+// this function validates the city input
 function validateCity(inputElement) {
   let isCityValid = true;
   const city = inputElement.value;
@@ -287,7 +288,7 @@ function validateCity(inputElement) {
   }
   return { city, isCityValid };
 }
-
+// this function validates the address input
 function validateAddress(inputElement) {
   let isAddressValid = true;
   const address = inputElement.value;
@@ -298,7 +299,7 @@ function validateAddress(inputElement) {
   }
   return { address, isAddressValid };
 }
-
+// this function validates the last name input
 function validateLastName(inputElement) {
   let isLastNameValid = true;
   const lastName = inputElement.value;
@@ -312,7 +313,7 @@ function validateLastName(inputElement) {
   }
   return { lastName, isLastNameValid };
 }
-
+// this function validates the first name input
 function validateFirstName(inputElement) {
   let isFirstNameValid = true;
   const firstName = inputElement.value;
