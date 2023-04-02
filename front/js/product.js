@@ -67,13 +67,22 @@ function addCartItem() {
     }
     return isFound;
   }
+  function isEmpty() {
+    let isEmpty = false;
+    if (currentNewItem.quantity == 0 || currentNewItem.color == "") {
+      isEmpty = true;
+    }
+    return isEmpty;
+  }
+
   console.log(currentNewItem);
   console.log(cart);
-  if (!addIfFound()) {
+  if (!addIfFound() && !isEmpty()) {
     cart.push(currentNewItem);
+
+    localStorage.setItem("cartItems", JSON.stringify(cart));
+    alert("Item added to cart");
   }
-  localStorage.setItem("cartItems", JSON.stringify(cart));
-  alert("Item added to cart");
 }
 
 // this gets the input value of the item quantity
