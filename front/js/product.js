@@ -74,9 +74,6 @@ function addCartItem() {
     }
     return isEmpty;
   }
-
-  console.log(currentNewItem);
-  console.log(cart);
   if (!addIfFound() && !isEmpty()) {
     cart.push(currentNewItem);
 
