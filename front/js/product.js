@@ -38,10 +38,10 @@ function populateProductPage(product) {
 
 class cartItem {
   constructor(id, quantity, color) {
-  this.id = id;
-  this.quantity = quantity;
-  this.color = color;
-}
+    this.id = id;
+    this.quantity = quantity;
+    this.color = color;
+  }
 }
 
 addToCart.addEventListener("click", addCartItem);
@@ -69,6 +69,7 @@ function addCartItem() {
     }
     return isFound;
   }
+
   function isEmpty() {
     let isEmpty = false;
     if (currentNewItem.quantity == 0 || currentNewItem.color == "") {
@@ -76,8 +77,10 @@ function addCartItem() {
     }
     return isEmpty;
   }
-  if (!addIfFound() && !isEmpty()) {
-    cart.push(currentNewItem);
+  if (!isEmpty()) {
+    if (!addIfFound()) {
+      cart.push(currentNewItem);
+    }
 
     localStorage.setItem("cartItems", JSON.stringify(cart));
     alert("Item added to cart");
