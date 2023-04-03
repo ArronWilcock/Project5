@@ -36,10 +36,12 @@ function populateProductPage(product) {
 }
 // this is the new cart item array
 
-function cartItem(id, quantity, color) {
+class cartItem {
+  constructor(id, quantity, color) {
   this.id = id;
   this.quantity = quantity;
   this.color = color;
+}
 }
 
 addToCart.addEventListener("click", addCartItem);
